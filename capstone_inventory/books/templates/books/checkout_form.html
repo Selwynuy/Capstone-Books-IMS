@@ -1,0 +1,46 @@
+{% extends 'books/base.html' %} {% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Check Out: {{ book.title }}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Borrower Name</label>
+        <input
+          type="text"
+          name="borrower_name"
+          required
+          class="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Borrower ID</label>
+        <input
+          type="text"
+          name="borrower_id"
+          required
+          class="w-full border p-2 rounded"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Condition Notes</label>
+        <textarea
+          name="condition_before"
+          required
+          class="w-full border p-2 rounded"
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+      >
+        Complete Checkout
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

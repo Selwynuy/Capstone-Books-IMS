@@ -1,0 +1,104 @@
+<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+  <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+    <table class="min-w-full divide-y divide-gray-300">
+      <thead>
+        <tr>
+          <th
+            scope="col"
+            class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+          >
+            Title
+          </th>
+          <th
+            scope="col"
+            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+          >
+            Author
+          </th>
+          <th
+            scope="col"
+            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+          >
+            ISBN
+          </th>
+          <th
+            scope="col"
+            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+          >
+            Quantity
+          </th>
+          <th
+            scope="col"
+            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+          >
+            Location
+          </th>
+          <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+            <span class="sr-only">Edit</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {% for book in books %}
+        <tr>
+          <td
+            class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+          >
+            {{ book.title }}
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            {{ book.author }}
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            {{ book.isbn }}
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            {{ book.quantity }}
+          </td>
+          <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            {{ book.location }}
+          </td>
+          <td
+            class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
+          >
+            <a
+              href="{% url 'books:book-update' book.pk %}"
+              class="text-indigo-600 hover:text-indigo-900"
+              >Edit</a
+            >
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="py-4 text-center text-sm text-gray-500">
+            No books found
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if is_paginated %}
+    <div class="mt-4 flex items-center justify-between">
+      <span class="text-sm text-gray-700">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </span>
+      <div class="flex space-x-2">
+        {% if page_obj.has_previous %}
+        <a
+          href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+          class="px-3 py-1 rounded border text-sm"
+          >Previous</a
+        >
+        {% endif %} {% if page_obj.has_next %}
+        <a
+          href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+          class="px-3 py-1 rounded border text-sm"
+          >Next</a
+        >
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>

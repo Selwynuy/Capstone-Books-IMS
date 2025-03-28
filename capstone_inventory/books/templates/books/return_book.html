@@ -1,0 +1,137 @@
+{% extends 'books/base.html' %} {% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-bold mb-4">Return Book</h2>
+
+  <!-- Display error messages -->
+  {% if messages %}
+  <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="mb-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold">{{ transaction.book.title }}</h3>
+    <p>Original Borrower: {{ transaction.borrower_name }}</p>
+    <p>Checked out: {{ transaction.checkout_date|date:"M d, Y" }}</p>
+  </div>
+
+  <form method="post" id="returnForm">
+    {% csrf_token %}
+    <input
+      type="hidden"
+      name="borrowerToggle"
+      id="borrowerToggleValue"
+      value="off"
+    />
+
+    <!-- Toggle Switch -->
+    <div class="mb-6 flex items-center">
+      <span class="mr-3 text-sm font-medium">I am the original borrower</span>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" id="borrowerToggle" class="sr-only peer" />
+        <div
+          class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+        ></div>
+      </label>
+    </div>
+
+    <!-- Original Borrower Section -->
+    <div id="originalBorrowerSection" class="hidden mb-4">
+      <label class="block text-sm font-medium mb-1">Your Borrower ID*</label>
+      <input
+        type="text"
+        name="borrower_id"
+        class="w-full px-3 py-2 border rounded-md"
+        placeholder="Enter your borrower ID"
+      />
+    </div>
+
+    <!-- Returner Section -->
+    <div id="returnerSection">
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Returner Name*</label>
+        <input
+          type="text"
+          name="returner_name"
+          class="w-full px-3 py-2 border rounded-md"
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Returner ID*</label>
+        <input
+          type="text"
+          name="returner_id"
+          class="w-full px-3 py-2 border rounded-md"
+        />
+      </div>
+    </div>
+
+    <!-- Condition Notes -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Condition Notes*</label>
+      <textarea
+        name="condition_notes"
+        required
+        class="w-full px-3 py-2 border rounded-md"
+        placeholder="Describe the book's current condition"
+      ></textarea>
+    </div>
+
+    <button
+      type="submit"
+      class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+    >
+      Confirm Return
+    </button>
+  </form>
+</div>
+
+<script>
+  document
+    .getElementById("borrowerToggle")
+    .addEventListener("change", function () {
+      const isOriginalBorrower = this.checked;
+      document.getElementById("borrowerToggleValue").value = isOriginalBorrower
+        ? "on"
+        : "off";
+
+      // Toggle sections
+      document
+        .getElementById("originalBorrowerSection")
+        .classList.toggle("hidden", !isOriginalBorrower);
+      document
+        .getElementById("returnerSection")
+        .classList.toggle("hidden", isOriginalBorrower);
+
+      // Update required fields
+      const returnerFields = document.querySelectorAll(
+        "#returnerSection input"
+      );
+      returnerFields.forEach((field) => {
+        field.required = !isOriginalBorrower;
+      });
+
+      document.querySelector('[name="borrower_id"]').required =
+        isOriginalBorrower;
+    });
+
+  // Initialize form state
+  document.addEventListener("DOMContentLoaded", function () {
+    document
+      .getElementById("borrowerToggle")
+      .dispatchEvent(new Event("change"));
+  });
+</script>
+
+<style>
+  .hidden {
+    display: none;
+  }
+  .error {
+    border-color: #ef4444;
+  }
+</style>
+{% endblock %}
