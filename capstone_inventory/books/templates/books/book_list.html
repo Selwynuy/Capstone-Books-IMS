@@ -1,69 +1,155 @@
 {% extends 'books/base.html' %} {% block content %}
-<div class="mb-6">
-  <form method="get">
+<div class="mb-6 flex justify-center">
+  <form method="get" class="relative w-full max-w-md">
     <input
       type="text"
       name="q"
       placeholder="Search books..."
-      class="border p-2 rounded w-full max-w-md"
+      class="border p-3 rounded-lg w-full shadow-sm pl-10 focus:ring focus:ring-blue-300 outline-none transition-all"
       value="{{ request.GET.q }}"
     />
+    <!-- Search Icon -->
+    <svg
+      class="w-5 h-5 text-gray-400 absolute left-3 top-3"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M21 21l-4.35-4.35m0 0A8.5 8.5 0 1011.5 20 8.5 8.5 0 0016.65 16.65z"
+      ></path>
+    </svg>
   </form>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
   {% for book in books %}
   <div
-    class="border rounded-lg p-4 {% if book.status != 'AVAILABLE' %}bg-gray-50{% endif %}"
+    class="rounded-xl shadow-lg p-5 transition-transform hover:scale-[1.02] bg-white {% if book.status != 'AVAILABLE' %}opacity-80{% endif %}"
   >
     <!-- Book Cover -->
-    <div class="h-48 bg-gray-200 mb-3 flex items-center justify-center">
+    <div
+      class="h-48 bg-gray-100 mb-4 flex items-center justify-center rounded-lg overflow-hidden"
+    >
       {% if book.cover_image %}
       <img
         src="{{ book.cover_image.url }}"
         alt="{{ book.title }}"
-        class="h-full object-contain"
+        class="h-full object-cover"
       />
       {% else %}
-      <span class="text-gray-500">No cover image</span>
+      <div class="flex flex-col items-center">
+        <svg
+          class="w-12 h-12 text-gray-400"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 4v16l7-4 7 4V4"
+          ></path>
+        </svg>
+        <span class="text-gray-500 text-sm">No cover image</span>
+      </div>
       {% endif %}
     </div>
 
     <!-- Book Details -->
-    <h3 class="font-bold text-lg">{{ book.title }}</h3>
-    <p class="text-gray-600">{{ book.author }}</p>
-    <p class="text-sm text-gray-500">{{ book.category }}</p>
+    <h3 class="font-semibold text-xl text-gray-900">{{ book.title }}</h3>
+    <p class="text-gray-600 text-sm">{{ book.author }}</p>
+    <p class="text-gray-500 text-xs">{{ book.category }}</p>
 
-    <!-- SINGLE Status Indicator (Improved Version) -->
-    <div class="mt-3 flex items-center gap-2">
+    <!-- Status Indicator & Actions -->
+    <div class="mt-4 flex items-center justify-between">
       {% if book.status == 'AVAILABLE' %}
-      <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+      <span
+        class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+      >
+        <svg
+          class="w-4 h-4 text-green-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
         Available
       </span>
       <a
         href="{% url 'checkout-book' book.id %}"
-        class="text-sm text-blue-600 hover:text-blue-800"
+        class="text-blue-600 text-sm font-medium hover:text-blue-800 transition-all flex items-center gap-1"
       >
+        <svg
+          class="w-4 h-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 10h11M9 21V3M17 16l4-4m0 0l-4-4m4 4H9"
+          ></path>
+        </svg>
         Check Out
       </a>
 
       {% elif book.status == 'CHECKED_OUT' %}
-      <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">
+      <span
+        class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+      >
+        <svg
+          class="w-4 h-4 text-red-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10m-6 4h6m-4 4h4"
+          ></path>
+        </svg>
         Due: {{ book.transaction_set.first.due_date|date:"M d" }}
       </span>
       <a
         href="{% url 'return-book' book.transaction_set.first.id %}"
-        class="text-sm text-yellow-600 hover:text-yellow-800"
+        class="text-yellow-600 text-sm font-medium hover:text-yellow-800 transition-all flex items-center gap-1"
       >
+        <svg
+          class="w-4 h-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v16h16M4 16l4-4m0 0l-4-4m4 4h12"
+          ></path>
+        </svg>
         Return
       </a>
-
-      {% else %}
-      <span
-        class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs"
-      >
-        Maintenance
-      </span>
       {% endif %}
     </div>
   </div>

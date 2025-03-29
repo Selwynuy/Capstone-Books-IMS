@@ -4,13 +4,35 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Capstone Books</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gray-50">
-    <nav class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 py-4"> 
-        <h1 class="text-xl font-bold">Capstone Books</h1>
+    <nav class="bg-white shadow-md py-4">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="flex justify-between items-center">
+          <!-- Logo/Brand -->
+          <a href="/">
+            <h1
+              class="text-3xl font-semibold text-gray-900 hover:text-blue-500 transition-all duration-300"
+              style="font-family: 'Poppins', sans-serif"
+            >
+              Capstone Books
+            </h1>
+          </a>
+
+          <!-- Admin Login Button -->
+          <a
+            href="/admin/login/"
+            class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 font-medium"
+          >
+            Admin Login
+          </a>
+        </div>
       </div>
     </nav>
     <main class="max-w-7xl mx-auto px-4 py-6">
