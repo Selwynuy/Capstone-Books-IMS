@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="user-dashboard">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="font-bold">Total Borrowers</h3>
+            <p class="text-3xl">{{ borrowers_count }}</p>
+        </div>
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="font-bold">Active Loans</h3>
+            <p class="text-3xl">{{ active_loans_count }}</p>
+        </div>
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="font-bold">Overdue Books</h3>
+            <p class="text-3xl">{{ overdue_count }}</p>
+        </div>
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="font-bold">New Today</h3>
+            <p class="text-3xl">{{ new_today_count }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded shadow mb-8">
+        <h3 class="font-bold mb-4">Recent Borrowers</h3>
+        <table class="w-full">
+            <thead>
+                <tr class="border-b">
+                    <th class="text-left py-2">Name</th>
+                    <th class="text-left py-2">ID</th>
+                    <th class="text-left py-2">Registered</th>
+                    <th class="text-left py-2">Active Loans</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in recent_borrowers %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-2">{{ user.get_full_name }}</td>
+                    <td class="py-2">{{ user.institution_id }}</td>
+                    <td class="py-2">{{ user.date_registered|date:"M d, Y" }}</td>
+                    <td class="py-2">{{ user.transaction_set.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

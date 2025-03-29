@@ -1,3 +1,4 @@
+<!-- books/templates/books/checkout_form.html -->
 {% extends 'books/base.html' %} {% block content %}
 <div class="max-w-md mx-auto bg-white p-6 rounded shadow">
   <h2 class="text-xl font-bold mb-4">Check Out: {{ book.title }}</h2>
@@ -6,32 +7,38 @@
     {% csrf_token %}
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium mb-1">Borrower Name</label>
-        <input
-          type="text"
-          name="borrower_name"
-          required
-          class="w-full border p-2 rounded"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Borrower ID</label>
+        <label class="block text-sm font-medium mb-1">Student ID*</label>
         <input
           type="text"
           name="borrower_id"
           required
           class="w-full border p-2 rounded"
+          placeholder="Enter your Student ID"
         />
       </div>
 
       <div>
-        <label class="block text-sm font-medium mb-1">Condition Notes</label>
-        <textarea
-          name="condition_before"
-          required
+        <label class="block text-sm font-medium mb-1"
+          >First Name</label
+        >
+        <input
+          type="text"
+          name="first_name"
           class="w-full border p-2 rounded"
-        ></textarea>
+          placeholder="First name"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1"
+          >Last Name</label
+        >
+        <input
+          type="text"
+          name="last_name"
+          class="w-full border p-2 rounded"
+          placeholder="Last name"
+        />
       </div>
 
       <button
