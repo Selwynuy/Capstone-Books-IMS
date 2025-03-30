@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -137,3 +138,44 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 AUTH_USER_MODEL = 'books.CustomUser'
+
+
+# settings.py
+JAZZMIN_SETTINGS = {
+    # Title on the brand (19 chars max)
+    "site_title": "My Admin",
+
+    # Logo to use (must be present in static files)
+    "site_logo": "books/img/logo.png",
+
+    # Welcome text on the login screen
+    "welcome_sign": "Welcome to the Capstone Books Administration",
+
+    # Copyright on the footer
+    "copyright": "Acme Library Ltd",
+
+    # Dark mode by default?
+    "theme": "light",  # Options: "light" (default), "dark", "auto"
+
+    # Change icons per model
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "books.Book": "fas fa-book",
+        "books.Transaction": "fas fa-exchange-alt",
+    },
+}
+
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    # Try: navbar-primary, navbar-danger, etc.
+    "brand_colour": "navbar-primary",
+    "accent": "accent-lightblue",  # Other options: accent-primary, accent-warning
+    "navbar": "navbar-dark",  # Options: navbar-dark, navbar-light
+    "sidebar": "sidebar-dark-indigo",  # Try: sidebar-light-purple, sidebar-dark-navy
+}
