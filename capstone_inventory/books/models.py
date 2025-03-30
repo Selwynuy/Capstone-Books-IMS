@@ -9,13 +9,11 @@ class CustomUser(AbstractUser):
     borrower_id = models.CharField(
         max_length=20, unique=True, blank=True, null=True)
 
-    # For proper display in admin
     def __str__(self):
         if self.is_borrower:
             return f"{self.get_full_name()} ({self.borrower_id})" if self.borrower_id else self.username
         return self.username
 
-    # For admin - no borrower_id needed
     def save(self, *args, **kwargs):
         if not self.is_borrower:
             self.borrower_id = None
@@ -26,6 +24,33 @@ class CustomUser(AbstractUser):
         return name if name else f"Borrower {self.borrower_id}"
 
 
+class Person(models.Model):
+    """Base model for authors, panelists, and advisers"""
+    name = models.CharField(max_length=200)
+
+    class Meta:
+        # This makes it an abstract base class (won't create DB table)
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
+class Author(Person):
+    """Model specifically for book authors"""
+    pass
+
+
+class Panelist(Person):
+    """Model for panelists associated with books"""
+    pass
+
+
+class Adviser(Person):
+    """Model for advisers associated with books"""
+    pass
+
+
 class Book(models.Model):
     STATUS_CHOICES = [
         ('AVAILABLE', 'Available'),
@@ -33,7 +58,14 @@ class Book(models.Model):
     ]
 
     title = models.CharField(max_length=200)
-    author = models.CharField(max_length=100)
+    authors = models.ManyToManyField(Author, related_name='books')
+    panelists = models.ManyToManyField(Panelist, blank=True)
+    adviser = models.ForeignKey(
+        Adviser,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
     cover_image = models.ImageField(
         upload_to='book_covers/',
         blank=True,
@@ -49,11 +81,14 @@ class Book(models.Model):
         CustomUser,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        related_name='borrowed_books'
     )
 
     def __str__(self):
-        return f"{self.title} by {self.author}"
+        author_names = ", ".join([str(author)
+                                 for author in self.authors.all()])
+        return f"{self.title} by {author_names}"
 
 
 class Transaction(models.Model):
@@ -75,7 +110,7 @@ class Transaction(models.Model):
         return f"{self.book.title} - {self.borrower.get_full_name()}"
 
     def save(self, *args, **kwargs):
-        if self.returned_date:
+        if self.returned_date and not self.book.status == 'AVAILABLE':
             self.book.status = 'AVAILABLE'
             self.book.save()
         super().save(*args, **kwargs)

@@ -20,8 +20,10 @@ class BookListView(ListView):
         if search_query:
             return queryset.filter(
                 Q(title__icontains=search_query) |
-                Q(author__icontains=search_query) |
-                Q(category__icontains=search_query))
+                # Changed from author__icontains
+                Q(authors__name__icontains=search_query) |
+                Q(category__icontains=search_query)
+            ).distinct()  # Added distinct() to avoid duplicates
         return queryset
 
 
@@ -62,7 +64,10 @@ def checkout_book(request, book_id):
 
         return redirect('book-list')
 
-    return render(request, 'books/checkout_form.html', {'book': book})
+    return render(request, 'books/checkout_form.html', {
+        'book': book,
+        'authors': book.authors.all()  # Pass authors to template
+    })
 
 
 def return_book(request, transaction_id):
