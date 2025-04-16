@@ -21,7 +21,8 @@ class BookListView(ListView):
             return queryset.filter(
                 Q(title__icontains=search_query) |
                 Q(authors__name__icontains=search_query) | 
-                Q(panelists__name__icontains=search_query)
+                Q(panelists__name__icontains=search_query) |
+                Q(abstract__icontains=search_query)
             ).distinct()
         return queryset
 
