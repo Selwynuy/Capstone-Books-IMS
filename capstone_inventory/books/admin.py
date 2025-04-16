@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Book, Transaction, Author, Panelist, Adviser
+from django.db import models
+from django import forms
 
 
 @admin.register(CustomUser)
@@ -50,6 +52,10 @@ class BookAdmin(admin.ModelAdmin):
                      'borrower__first_name', 'borrower__last_name')
     # For easier many-to-many selection
     filter_horizontal = ('authors', 'panelists')
+
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows': 5, 'cols': 60})},
+    }
 
     def display_authors(self, obj):
         return ", ".join([author.name for author in obj.authors.all()])

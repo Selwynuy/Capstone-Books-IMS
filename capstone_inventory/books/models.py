@@ -84,6 +84,7 @@ class Book(models.Model):
         on_delete=models.SET_NULL,
         related_name='borrowed_books'
     )
+    abstract = models.TextField(blank=True, null=True, help_text='Enter the abstract of the book.')
 
     def __str__(self):
         author_names = ", ".join([str(author)

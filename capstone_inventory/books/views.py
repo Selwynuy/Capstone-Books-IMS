@@ -20,10 +20,9 @@ class BookListView(ListView):
         if search_query:
             return queryset.filter(
                 Q(title__icontains=search_query) |
-                # Changed from author__icontains
-                Q(authors__name__icontains=search_query) |
-                Q(category__icontains=search_query)
-            ).distinct()  # Added distinct() to avoid duplicates
+                Q(authors__name__icontains=search_query) | 
+                Q(panelists__name__icontains=search_query)
+            ).distinct()
         return queryset
 
 
