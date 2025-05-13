@@ -1,4 +1,4 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.db.models import Q
@@ -119,3 +119,9 @@ def return_book(request, transaction_id):
         'transaction': transaction,
         'now': timezone.now().date()
     })
+
+
+class BookDetailView(DetailView):
+    model = Book
+    template_name = 'books/book_detail.html'
+    context_object_name = 'book'

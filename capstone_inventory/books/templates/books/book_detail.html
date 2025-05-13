@@ -1,0 +1,47 @@
+{% extends 'books/base.html' %}
+
+{% block title %}{{ book.title }} - Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto flex flex-col lg:flex-row gap-8">
+    <div class="bg-white p-8 rounded-xl shadow-lg flex-1">
+        <h2 class="text-3xl font-bold mb-4">{{ book.title }}</h2>
+        {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="mb-4 rounded-lg w-full object-cover">
+        {% endif %}
+        <div class="mb-2">
+            <strong>Authors:</strong>
+            {% for author in book.authors.all %}
+                {{ author.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        <div class="mb-2">
+            <strong>Panelists:</strong>
+            {% for panelist in book.panelists.all %}
+                {{ panelist.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        <div class="mb-2">
+            <strong>Adviser:</strong>
+            {% if book.adviser %}
+                {{ book.adviser.name }}
+            {% else %}
+                None
+            {% endif %}
+        </div>
+        <div class="mb-2">
+            <strong>Status:</strong> {{ book.get_status_display }}
+        </div>
+        <!-- Add more fields as needed -->
+    </div>
+    <div class="p-8 bg-gradient-to-b from-gray-50 to-gray-200 border border-gray-200 rounded-xl shadow flex-1 flex flex-col h-full lg:h-auto lg:min-h-full justify-between">
+        <div>
+            <div class="flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-align-left text-blue-400 text-xl"></i>
+                <span class="text-lg font-semibold text-gray-800">Abstract</span>
+            </div>
+            <div class="mt-2 text-gray-700 whitespace-pre-line text-base leading-relaxed">{{ book.abstract }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

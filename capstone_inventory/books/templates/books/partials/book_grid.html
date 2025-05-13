@@ -1,16 +1,18 @@
 {% if books %}
     {% for book in books %}
-    <div class="book-card {% if book.status != 'AVAILABLE' %}opacity-90{% endif %}">
+    <div class="book-card flex flex-col {% if book.status != 'AVAILABLE' %}opacity-90{% endif %}">
         <!-- Book Cover -->
         <div class="h-56 cover-placeholder mb-4 flex items-center justify-center rounded-t-lg overflow-hidden relative">
-            {% if book.cover_image %}
-            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="h-full w-full object-cover">
-            {% else %}
-            <div class="flex flex-col items-center text-center p-4">
-                <i class="fa-solid fa-book-open text-4xl text-gray-300 mb-2"></i>
-                <span class="text-gray-400 text-sm">No cover available</span>
-            </div>
-            {% endif %}
+            <a href="{% url 'book-detail' book.id %}" class="block h-full w-full">
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="h-full w-full object-cover cursor-pointer">
+                {% else %}
+                    <div class="flex flex-col items-center text-center p-4 cursor-pointer">
+                        <i class="fa-solid fa-book-open text-4xl text-gray-300 mb-2"></i>
+                        <span class="text-gray-400 text-sm">No cover available</span>
+                    </div>
+                {% endif %}
+            </a>
             <div class="absolute top-2 right-2 bg-white/90 rounded-full p-1 shadow">
                 {% if book.status == 'AVAILABLE' %}
                 <i class="fa-solid fa-circle-check text-green-500 text-sm"></i>
@@ -54,12 +56,6 @@
                 </div>
                 {% endif %}
                 
-                {% if book.abstract %}
-                <div class="flex items-start">
-                    <i class="fa-solid fa-align-left mt-0.5 mr-2 text-gray-400 text-xs"></i>
-                    <span class="line-clamp-2">{{ book.abstract }}</span>
-                </div>
-                {% endif %}
             </div>
 
             <!-- Status & Actions -->
@@ -69,7 +65,7 @@
                     <i class="fa-solid fa-circle-check"></i>
                     Available
                 </span>
-                <a href="{% url 'checkout-book' book.id %}" class="action-link text-blue-600 text-sm font-medium hover:text-blue-800 flex items-center gap-2">
+                <a href="{% url 'checkout-book' book.id %}" class="action-link text-blue-600 text-sm font-medium hover:text-blue-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     Check Out
                 </a>
@@ -78,7 +74,7 @@
                     <i class="fa-solid fa-clock"></i>
                     Due: {{ book.transaction_set.first.due_date|date:"M d" }}
                 </span>
-                <a href="{% url 'return-book' book.transaction_set.first.id %}" class="action-link text-amber-600 text-sm font-medium hover:text-amber-800 flex items-center gap-2">
+                <a href="{% url 'return-book' book.transaction_set.first.id %}" class="action-link text-amber-600 text-sm font-medium hover:text-amber-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
                     <i class="fa-solid fa-rotate-left"></i>
                     Return
                 </a>
@@ -117,4 +113,5 @@
         {% endif %}
     </div>
 </div>
-{% endif %} 
+{% endif %}
+
