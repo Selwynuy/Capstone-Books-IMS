@@ -77,6 +77,8 @@ class TransactionAdmin(admin.ModelAdmin):
     list_filter = ('checkout_date', 'returned_date')
     search_fields = ('book__title', 'borrower__first_name',
                      'borrower__last_name')
+    readonly_fields = ('returned_date',)
+
 
     def get_borrower_name(self, obj):
         return obj.borrower.get_full_name()

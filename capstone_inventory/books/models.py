@@ -84,7 +84,8 @@ class Book(models.Model):
         on_delete=models.SET_NULL,
         related_name='borrowed_books'
     )
-    abstract = models.TextField(blank=True, null=True, help_text='Enter the abstract of the book.')
+    abstract = models.TextField(
+        blank=True, null=True, help_text='Enter the abstract of the book.')
 
     def __str__(self):
         author_names = ", ".join([str(author)
@@ -97,7 +98,8 @@ class Transaction(models.Model):
     borrower = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     checkout_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateField()
-    returned_date = models.DateTimeField(blank=True, null=True)
+    returned_date = models.DateTimeField(
+        blank=True, null=True, help_text='Date when the book was returned.')
     condition_notes = models.TextField(blank=True)
     returner = models.ForeignKey(
         CustomUser,

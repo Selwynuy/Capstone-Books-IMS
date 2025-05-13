@@ -1,0 +1,120 @@
+{% if books %}
+    {% for book in books %}
+    <div class="book-card {% if book.status != 'AVAILABLE' %}opacity-90{% endif %}">
+        <!-- Book Cover -->
+        <div class="h-56 cover-placeholder mb-4 flex items-center justify-center rounded-t-lg overflow-hidden relative">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="h-full w-full object-cover">
+            {% else %}
+            <div class="flex flex-col items-center text-center p-4">
+                <i class="fa-solid fa-book-open text-4xl text-gray-300 mb-2"></i>
+                <span class="text-gray-400 text-sm">No cover available</span>
+            </div>
+            {% endif %}
+            <div class="absolute top-2 right-2 bg-white/90 rounded-full p-1 shadow">
+                {% if book.status == 'AVAILABLE' %}
+                <i class="fa-solid fa-circle-check text-green-500 text-sm"></i>
+                {% else %}
+                <i class="fa-solid fa-clock text-yellow-500 text-sm"></i>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Book Details -->
+        <div class="p-5 pt-0">
+            <h3 class="font-bold text-lg text-gray-800 mb-2 line-clamp-2">{{ book.title }}</h3>
+            
+            <div class="book-details space-y-2 text-sm text-gray-600">
+                {% if book.authors.exists %}
+                <div class="flex items-start">
+                    <i class="fa-solid fa-user-pen mt-0.5 mr-2 text-gray-400 text-xs"></i>
+                    <span class="line-clamp-2">
+                        {% for author in book.authors.all %}
+                            {{ author.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                
+                {% if book.panelists.exists %}
+                <div class="flex items-start">
+                    <i class="fa-solid fa-users mt-0.5 mr-2 text-gray-400 text-xs"></i>
+                    <span class="line-clamp-2">
+                        {% for panelist in book.panelists.all %}
+                            {{ panelist.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                
+                {% if book.adviser %}
+                <div class="flex items-start">
+                    <i class="fa-solid fa-person-chalkboard mt-0.5 mr-2 text-gray-400 text-xs"></i>
+                    <span class="line-clamp-1">{{ book.adviser.name }}</span>
+                </div>
+                {% endif %}
+                
+                {% if book.abstract %}
+                <div class="flex items-start">
+                    <i class="fa-solid fa-align-left mt-0.5 mr-2 text-gray-400 text-xs"></i>
+                    <span class="line-clamp-2">{{ book.abstract }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Status & Actions -->
+            <div class="mt-4 flex items-center justify-between border-t pt-3">
+                {% if book.status == 'AVAILABLE' %}
+                <span class="status-badge bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Available
+                </span>
+                <a href="{% url 'checkout-book' book.id %}" class="action-link text-blue-600 text-sm font-medium hover:text-blue-800 flex items-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Check Out
+                </a>
+                {% else %}
+                <span class="status-badge bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-medium flex items-center gap-2">
+                    <i class="fa-solid fa-clock"></i>
+                    Due: {{ book.transaction_set.first.due_date|date:"M d" }}
+                </span>
+                <a href="{% url 'return-book' book.transaction_set.first.id %}" class="action-link text-amber-600 text-sm font-medium hover:text-amber-800 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Return
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="col-span-full text-center py-12">
+    <i class="fa-solid fa-book-open text-5xl text-gray-300 mb-4"></i>
+    <h3 class="text-xl font-medium text-gray-600">No books found</h3>
+    <p class="text-gray-500 mt-2">Try adjusting your search query</p>
+</div>
+{% endif %}
+
+{% if books.has_other_pages %}
+<div class="mt-8 flex justify-center">
+    <div class="flex space-x-2">
+        {% if books.has_previous %}
+        <a href="?page={{ books.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+           class="px-4 py-2 rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300 text-gray-600 hover:text-blue-600">
+            <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        <span class="px-4 py-2 rounded-lg bg-white shadow-sm text-gray-600">
+            Page {{ books.number }} of {{ books.paginator.num_pages }}
+        </span>
+        
+        {% if books.has_next %}
+        <a href="?page={{ books.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+           class="px-4 py-2 rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300 text-gray-600 hover:text-blue-600">
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %} 

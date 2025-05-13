@@ -20,11 +20,16 @@ class BookListView(ListView):
         if search_query:
             return queryset.filter(
                 Q(title__icontains=search_query) |
-                Q(authors__name__icontains=search_query) | 
+                Q(authors__name__icontains=search_query) |
                 Q(panelists__name__icontains=search_query) |
                 Q(abstract__icontains=search_query)
             ).distinct()
         return queryset
+
+    def render_to_response(self, context, **response_kwargs):
+        if getattr(self.request, 'htmx', False):
+            return render(self.request, 'books/partials/book_grid.html', context)
+        return super().render_to_response(context, **response_kwargs)
 
 
 def checkout_book(request, book_id):
@@ -114,15 +119,3 @@ def return_book(request, transaction_id):
         'transaction': transaction,
         'now': timezone.now().date()
     })
-
-
-class OverdueBooksView(ListView):
-    model = Transaction
-    template_name = 'books/overdue_list.html'
-    context_object_name = 'transactions'
-
-    def get_queryset(self):
-        return Transaction.objects.filter(
-            returned_date__isnull=True,
-            due_date__lt=timezone.now().date()
-        )

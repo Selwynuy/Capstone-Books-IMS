@@ -1,43 +1,159 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Capstone Books</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
+    <meta name="description" content="Capstone Books - Library Management System" />
+    <meta name="theme-color" content="#3B82F6" />
+    <title>{% block title %}Capstone Books{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Scripts -->
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/3b76784079.js" crossorigin="anonymous"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+      :root {
+        --primary-color: #3B82F6;
+        --primary-hover: #2563EB;
+      }
+      
+      body {
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      main {
+        flex: 1;
+      }
+      
+      .nav-link {
+        position: relative;
+      }
+      
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: var(--primary-color);
+        transition: width 0.3s ease;
+      }
+      
+      .nav-link:hover::after {
+        width: 100%;
+      }
+      
+      .btn-primary {
+        background-color: var(--primary-color);
+        transition: all 0.3s ease;
+      }
+      
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+      
+      .flash-message {
+        animation: slideIn 0.3s ease-out;
+      }
+      
+      @keyframes slideIn {
+        from {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    </style>
+    {% block head %}{% endblock %}
   </head>
   <body class="bg-gray-50">
-    <nav class="bg-white shadow-md py-4">
+    <!-- Flash Messages -->
+    {% if messages %}
+    <div class="fixed top-4 right-4 z-50 space-y-2">
+      {% for message in messages %}
+      <div class="flash-message px-4 py-3 rounded-lg shadow-lg {% if message.tags == 'success' %}bg-green-500{% elif message.tags == 'error' %}bg-red-500{% else %}bg-blue-500{% endif %} text-white">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md py-4 sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6">
         <div class="flex justify-between items-center">
           <!-- Logo/Brand -->
-          <a href="/">
-            <h1
-              class="text-3xl font-semibold text-gray-900 hover:text-blue-500 transition-all duration-300"
-              style="font-family: 'Poppins', sans-serif"
-            >
+          <a href="/" class="nav-link">
+            <h1 class="text-3xl font-semibold text-gray-900 hover:text-blue-500 transition-all duration-300">
               Capstone Books
             </h1>
           </a>
 
-          <!-- Admin Login Button -->
-          <a
-            href="/admin/login/?next=/admin/"
-            class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 font-medium"
-          >
-            Admin Login
-          </a>
+          <!-- Navigation Links -->
+          <div class="hidden md:flex items-center space-x-6">
+            <a href="{% url 'book-list' %}" class="nav-link text-gray-600 hover:text-blue-500">Books</a>
+            <a href="/admin/books/transaction/" class="nav-link text-gray-600 hover:text-blue-500">Transactions</a>
+            <a href="/admin/login/?next=/admin/" class="btn-primary text-white px-5 py-2 rounded-full font-medium">
+              Admin Login
+            </a>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button class="md:hidden text-gray-600 hover:text-blue-500" id="mobile-menu-button">
+            <i class="fa-solid fa-bars text-2xl"></i>
+          </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden mt-4" id="mobile-menu">
+          <div class="flex flex-col space-y-4">
+            <a href="{% url 'book-list' %}" class="nav-link text-gray-600 hover:text-blue-500">Books</a>
+            <a href="/admin/books/transaction/" class="nav-link text-gray-600 hover:text-blue-500">Transactions</a>
+            <a href="/admin/login/?next=/admin/" class="btn-primary text-white px-5 py-2 rounded-full font-medium text-center">
+              Admin Login
+            </a>
+          </div>
         </div>
       </div>
     </nav>
+
+    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-6">
       {% block content %}{% endblock %}
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto">
+      <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="text-center text-gray-600">
+          <p>&copy; {% now "Y" %} Capstone Books. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script>
+      document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+      });
+    </script>
   </body>
 </html>
