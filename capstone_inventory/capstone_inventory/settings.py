@@ -142,28 +142,24 @@ AUTH_USER_MODEL = 'books.CustomUser'
 
 # settings.py
 JAZZMIN_SETTINGS = {
-    # Title on the brand (19 chars max)
-    "site_title": "My Admin",
-
-    # Logo to use (must be present in static files)
-    "site_logo": "books/img/logo.png",
-
-    # Welcome text on the login screen
-    "welcome_sign": "Welcome to the Capstone Books Administration",
-
-    # Copyright on the footer
-    "copyright": "Acme Library Ltd",
-
-    # Dark mode by default?
-    "theme": "light",  # Options: "light" (default), "dark", "auto"
-
-    # Change icons per model
+    "site_title": "Capstone Books Admin",
+    "site_header": "Capstone Books",
+    "site_brand": "Capstone Books",
+    "site_logo": None,  # Remove logo for a clean look, or set to a minimal logo if you have one
+    "login_logo": None,
+    "welcome_sign": "Welcome to Capstone Books Admin",
+    "copyright": "",
+    "theme": "auto",  # Auto switch between light/dark
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
+        "books.Adviser": "fas fa-user-tie",
+        "books.Author": "fas fa-user-pen",
         "books.Book": "fas fa-book",
+        "books.Panelist": "fas fa-users",
         "books.Transaction": "fas fa-exchange-alt",
+        "books.CustomUser": "fas fa-user-circle",
     },
 }
 

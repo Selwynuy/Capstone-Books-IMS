@@ -31,16 +31,19 @@ class UserAdmin(UserAdmin):
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    icon_name = 'user-pen'
 
 
 class PanelistAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    icon_name = 'users'
 
 
 class AdviserAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    icon_name = 'user-tie'
 
 
 @admin.register(Book)
@@ -52,6 +55,7 @@ class BookAdmin(admin.ModelAdmin):
                      'borrower__first_name', 'borrower__last_name')
     # For easier many-to-many selection
     filter_horizontal = ('authors', 'panelists')
+    icon_name = 'book'
 
     formfield_overrides = {
         models.TextField: {'widget': forms.Textarea(attrs={'rows': 5, 'cols': 60})},
@@ -78,7 +82,7 @@ class TransactionAdmin(admin.ModelAdmin):
     search_fields = ('book__title', 'borrower__first_name',
                      'borrower__last_name')
     readonly_fields = ('returned_date',)
-
+    icon_name = 'exchange-alt'
 
     def get_borrower_name(self, obj):
         return obj.borrower.get_full_name()
