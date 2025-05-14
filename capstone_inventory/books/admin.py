@@ -53,10 +53,9 @@ class BookAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     search_fields = ('title', 'authors__name',
                      'borrower__first_name', 'borrower__last_name')
-    # For easier many-to-many selection
     filter_horizontal = ('authors', 'panelists')
     icon_name = 'book'
-
+    exclude = ("borrower",)
     formfield_overrides = {
         models.TextField: {'widget': forms.Textarea(attrs={'rows': 5, 'cols': 60})},
     }

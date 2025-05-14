@@ -42,13 +42,16 @@ class BookListView(ListView):
                     queryset = queryset.filter(adviser__name__icontains=search_query)
             elif search_type == "abstract":
                 queryset = queryset.filter(abstract__icontains=search_query)
+            elif search_type == "keywords":
+                queryset = queryset.filter(keywords__icontains=search_query)
             else:  # all
                 queryset = queryset.filter(
                     Q(title__icontains=search_query) |
                     Q(abstract__icontains=search_query) |
                     Q(authors__name__icontains=search_query) |
                     Q(panelists__name__icontains=search_query) |
-                    Q(adviser__name__icontains=search_query)
+                    Q(adviser__name__icontains=search_query) |
+                    Q(keywords__icontains=search_query)
                 )
         if availability == "available":
             queryset = queryset.filter(status="AVAILABLE")
