@@ -3,7 +3,7 @@
     <div class="book-card flex flex-col {% if book.status != 'AVAILABLE' %}opacity-90{% endif %}">
         <!-- Book Cover -->
         <div class="h-56 cover-placeholder mb-4 flex items-center justify-center rounded-t-lg overflow-hidden relative">
-            <a href="{% url 'book-detail' book.id %}" class="block h-full w-full">
+            <a href="{% url 'book_detail' book.id %}" class="block h-full w-full">
                 {% if book.cover_image %}
                     <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="h-full w-full object-cover cursor-pointer">
                 {% else %}
@@ -65,7 +65,7 @@
                     <i class="fa-solid fa-circle-check"></i>
                     Available
                 </span>
-                <a href="{% url 'checkout-book' book.id %}" class="action-link text-blue-600 text-sm font-medium hover:text-blue-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
+                <a href="{% url 'checkout_book' book.id %}" class="action-link text-blue-600 text-sm font-medium hover:text-blue-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     Check Out
                 </a>
@@ -74,10 +74,12 @@
                     <i class="fa-solid fa-clock"></i>
                     Due: {{ book.transaction_set.first.due_date|date:"M d" }}
                 </span>
-                <a href="{% url 'return-book' book.transaction_set.first.id %}" class="action-link text-amber-600 text-sm font-medium hover:text-amber-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
+                {% if book.transaction_set.first %}
+                <a href="{% url 'return_book' book.transaction_set.first.id %}" class="action-link text-amber-600 text-sm font-medium hover:text-amber-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
                     <i class="fa-solid fa-rotate-left"></i>
                     Return
                 </a>
+                {% endif %}
                 {% endif %}
             </div>
         </div>

@@ -1,8 +1,8 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.db.models import Q
-from .models import Book, Transaction, CustomUser
+from .models import Book, Transaction, CustomUser, Author, Panelist, Adviser
 from datetime import date, timedelta
 from django.utils import timezone
 from django.contrib import messages
@@ -16,15 +16,49 @@ class BookListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_query = self.request.GET.get("q")
+        search_query = self.request.GET.get("search")
+        search_type = self.request.GET.get("search_type", "all")
+        availability = self.request.GET.get("availability")
+        author_id = self.request.GET.get("author")
+        adviser_id = self.request.GET.get("adviser")
+
         if search_query:
-            return queryset.filter(
-                Q(title__icontains=search_query) |
-                Q(authors__name__icontains=search_query) |
-                Q(panelists__name__icontains=search_query) |
-                Q(abstract__icontains=search_query)
-            ).distinct()
-        return queryset
+            if search_type == "title":
+                queryset = queryset.filter(title__icontains=search_query)
+            elif search_type == "author":
+                if search_query.isdigit():
+                    queryset = queryset.filter(authors__id=int(search_query))
+                else:
+                    queryset = queryset.filter(authors__name__icontains=search_query)
+            elif search_type == "panelist":
+                if search_query.isdigit():
+                    queryset = queryset.filter(panelists__id=int(search_query))
+                else:
+                    queryset = queryset.filter(panelists__name__icontains=search_query)
+            elif search_type == "adviser":
+                if search_query.isdigit():
+                    queryset = queryset.filter(adviser__id=int(search_query))
+                else:
+                    queryset = queryset.filter(adviser__name__icontains=search_query)
+            elif search_type == "abstract":
+                queryset = queryset.filter(abstract__icontains=search_query)
+            else:  # all
+                queryset = queryset.filter(
+                    Q(title__icontains=search_query) |
+                    Q(abstract__icontains=search_query) |
+                    Q(authors__name__icontains=search_query) |
+                    Q(panelists__name__icontains=search_query) |
+                    Q(adviser__name__icontains=search_query)
+                )
+        if availability == "available":
+            queryset = queryset.filter(status="AVAILABLE")
+        elif availability == "checked_out":
+            queryset = queryset.filter(status="CHECKED_OUT")
+        if author_id:
+            queryset = queryset.filter(authors__id=author_id)
+        if adviser_id:
+            queryset = queryset.filter(adviser__id=adviser_id)
+        return queryset.distinct()
 
     def render_to_response(self, context, **response_kwargs):
         if getattr(self.request, 'htmx', False):
@@ -67,7 +101,7 @@ def checkout_book(request, book_id):
         book.borrower = borrower
         book.save()
 
-        return redirect('book-list')
+        return redirect('book_list')
 
     return render(request, 'books/checkout_form.html', {
         'book': book,
@@ -99,7 +133,7 @@ def return_book(request, transaction_id):
             returner_id = request.POST.get('returner_id', '').strip()
             if not returner_id:
                 messages.error(request, "Returner ID is required")
-                return redirect('return-book', transaction_id=transaction.id)
+                return redirect('return_book', transaction_id=transaction.id)
 
             returner, _ = CustomUser.objects.get_or_create(
                 borrower_id=returner_id,
@@ -113,7 +147,7 @@ def return_book(request, transaction_id):
         transaction.save()
 
         messages.success(request, "Book returned successfully")
-        return redirect('book-list')
+        return redirect('book_list')
 
     return render(request, 'books/return_book.html', {
         'transaction': transaction,
@@ -125,3 +159,14 @@ class BookDetailView(DetailView):
     model = Book
     template_name = 'books/book_detail.html'
     context_object_name = 'book'
+
+
+class LandingPageView(TemplateView):
+    template_name = 'books/landing.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['authors'] = Author.objects.all()
+        context['panelists'] = Panelist.objects.all()
+        context['advisers'] = Adviser.objects.all()
+        return context

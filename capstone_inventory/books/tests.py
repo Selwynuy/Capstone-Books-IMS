@@ -101,14 +101,14 @@ class ViewTest(TestCase):
         )
 
     def test_book_list_view(self):
-        response = self.client.get(reverse('book-list'))
+        response = self.client.get(reverse('book_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'books/book_list.html')
         self.assertContains(response, "Test Book")
 
     def test_checkout_view(self):
         response = self.client.post(
-            reverse('checkout-book', args=[self.book.id]),
+            reverse('checkout_book', args=[self.book.id]),
             {
                 'borrower_id': 'B001',
                 'first_name': 'Test',
@@ -133,7 +133,7 @@ class ViewTest(TestCase):
 
         # Then return it
         response = self.client.post(
-            reverse('return-book', args=[transaction.id]),
+            reverse('return_book', args=[transaction.id]),
             {
                 'borrowerToggle': 'on',
                 'borrower_id': 'B001',
@@ -145,3 +145,59 @@ class ViewTest(TestCase):
         self.book.refresh_from_db()
         self.assertIsNotNone(transaction.returned_date)
         self.assertEqual(self.book.status, "AVAILABLE")
+
+class SearchFeatureTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.author1 = Author.objects.create(name="Alpha Author")
+        self.author2 = Author.objects.create(name="Beta Author")
+        self.panelist = Panelist.objects.create(name="Panelist One")
+        self.adviser = Adviser.objects.create(name="Adviser X")
+        self.book1 = Book.objects.create(title="Alpha Book", status="AVAILABLE")
+        self.book2 = Book.objects.create(title="Beta Book", status="CHECKED_OUT")
+        self.book1.authors.add(self.author1)
+        self.book2.authors.add(self.author2)
+        self.book1.panelists.add(self.panelist)
+        self.book1.adviser = self.adviser
+        self.book1.save()
+        self.book2.save()
+
+    def test_search_by_title(self):
+        response = self.client.get(reverse('book_list'), {'search': 'Alpha', 'search_type': 'title'})
+        self.assertContains(response, "Alpha Book")
+        self.assertNotContains(response, "Beta Book")
+
+    def test_search_by_author(self):
+        response = self.client.get(reverse('book_list'), {'search': 'Beta', 'search_type': 'author'})
+        self.assertContains(response, "Beta Book")
+        self.assertNotContains(response, "Alpha Book")
+
+    def test_search_by_panelist(self):
+        response = self.client.get(reverse('book_list'), {'search': 'Panelist One', 'search_type': 'panelist'})
+        self.assertContains(response, "Alpha Book")
+        self.assertNotContains(response, "Beta Book")
+
+    def test_search_by_adviser(self):
+        response = self.client.get(reverse('book_list'), {'search': 'Adviser X', 'search_type': 'all'})
+        self.assertContains(response, "Alpha Book")
+        self.assertNotContains(response, "Beta Book")
+
+    def test_filter_by_author_dropdown(self):
+        response = self.client.get(reverse('book_list'), {'author': self.author1.id})
+        self.assertContains(response, "Alpha Book")
+        self.assertNotContains(response, "Beta Book")
+
+    def test_filter_by_adviser_dropdown(self):
+        response = self.client.get(reverse('book_list'), {'adviser': self.adviser.id})
+        self.assertContains(response, "Alpha Book")
+        self.assertNotContains(response, "Beta Book")
+
+    def test_filter_by_availability_available(self):
+        response = self.client.get(reverse('book_list'), {'availability': 'available'})
+        self.assertContains(response, "Alpha Book")
+        self.assertNotContains(response, "Beta Book")
+
+    def test_filter_by_availability_checked_out(self):
+        response = self.client.get(reverse('book_list'), {'availability': 'checked_out'})
+        self.assertContains(response, "Beta Book")
+        self.assertNotContains(response, "Alpha Book")
