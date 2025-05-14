@@ -87,6 +87,12 @@ class Book(models.Model):
     abstract = models.TextField(
         blank=True, null=True, help_text='Enter the abstract of the book.')
     keywords = models.TextField(blank=True, help_text='Comma-separated keywords for this book.')
+    approval_sheet = models.FileField(
+        upload_to='approval_sheets/',
+        blank=True,
+        null=True,
+        help_text='Upload the approval sheet (PDF only)',
+    )
 
     def __str__(self):
         author_names = ", ".join([str(author)

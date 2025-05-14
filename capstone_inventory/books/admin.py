@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Book, Transaction, Author, Panelist, Adviser
 from django.db import models
 from django import forms
+from django.utils.html import format_html
 
 
 @admin.register(CustomUser)
@@ -46,10 +47,23 @@ class AdviserAdmin(admin.ModelAdmin):
     icon_name = 'user-tie'
 
 
+class BookAdminForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = '__all__'
+
+    def clean_approval_sheet(self):
+        file = self.cleaned_data.get('approval_sheet', False)
+        if file and not file.name.lower().endswith('.pdf'):
+            raise forms.ValidationError("Only PDF files are allowed.")
+        return file
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
+    form = BookAdminForm
     list_display = ('title', 'display_authors', 'status',
-                    'get_adviser', 'get_borrower_name')
+                    'get_adviser', 'get_borrower_name', 'approval_sheet_available')
     list_filter = ('status',)
     search_fields = ('title', 'authors__name',
                      'borrower__first_name', 'borrower__last_name')
@@ -59,6 +73,11 @@ class BookAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': forms.Textarea(attrs={'rows': 5, 'cols': 60})},
     }
+    readonly_fields = ('approval_sheet_link',)
+    fields = (
+        'title', 'authors', 'panelists', 'adviser', 'cover_image', 'status', 'abstract', 'keywords',
+        'approval_sheet', 'approval_sheet_link',
+    )
 
     def display_authors(self, obj):
         return ", ".join([author.name for author in obj.authors.all()])
@@ -71,6 +90,24 @@ class BookAdmin(admin.ModelAdmin):
     def get_borrower_name(self, obj):
         return obj.borrower.get_full_name() if obj.borrower else "None"
     get_borrower_name.short_description = 'Borrower'
+
+    def approval_sheet_link(self, obj):
+        if obj.approval_sheet:
+            return format_html('<a href="{}" download>Download Approval Sheet</a>', obj.approval_sheet.url)
+        return "No file"
+    approval_sheet_link.short_description = "Approval Sheet"
+
+    def approval_sheet_available(self, obj):
+        if obj.approval_sheet:
+            return format_html(
+                '<a href="{}" target="_blank" style="margin-right:10px;">Preview</a>'
+                '<a href="{}" download>Download</a>',
+                obj.approval_sheet.url,
+                obj.approval_sheet.url
+            )
+        return "No file"
+    approval_sheet_available.short_description = "Approval Sheet"
+    approval_sheet_available.allow_tags = True
 
 
 @admin.register(Transaction)
