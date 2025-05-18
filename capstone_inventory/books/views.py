@@ -21,6 +21,7 @@ class BookListView(ListView):
         availability = self.request.GET.get("availability")
         author_id = self.request.GET.get("author")
         adviser_id = self.request.GET.get("adviser")
+        panelist_id = self.request.GET.get("panelist")  # Get single panelist ID
 
         if search_query:
             if search_type == "title":
@@ -61,6 +62,8 @@ class BookListView(ListView):
             queryset = queryset.filter(authors__id=author_id)
         if adviser_id:
             queryset = queryset.filter(adviser__id=adviser_id)
+        if panelist_id:
+            queryset = queryset.filter(panelists__id=panelist_id)
         return queryset.distinct()
 
     def render_to_response(self, context, **response_kwargs):
