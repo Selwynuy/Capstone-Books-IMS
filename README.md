@@ -92,3 +92,17 @@ Admins can upload an "Approval Sheet" (PDF only) for each book in the Django adm
 
 ## License
 This project is for educational purposes. Please adapt as needed for your institution.
+
+## Important Notes
+
+- **Database file (`db.sqlite3`)**: This file should NOT be tracked by Git. If you see it in your repository, remove it and add `db.sqlite3` to your `.gitignore` file.
+- **After deleting `db.sqlite3`**: Run migrations to recreate the database structure:
+  ```
+  python capstone_inventory/manage.py migrate
+  ```
+  Then, create a superuser if needed:
+  ```
+  python capstone_inventory/manage.py createsuperuser
+  ```
+
+- **Return Book Logic**: The return process now always shows the correct borrower and dates by fetching the latest unreturned transaction for a book. The return URL is now `/return/<book_id>/`.
