@@ -2,4 +2,7 @@ Django==5.1.7
 django-jazzmin==3.0.1
 django-htmx==1.17.2
 Pillow==10.2.0
+asgiref==3.8.1
+sqlparse==0.4.4
+tzdata==2025.1
 # Add any other dependencies you use below 
