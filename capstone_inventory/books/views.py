@@ -115,43 +115,39 @@ def checkout_book(request, book_id):
     })
 
 
-def return_book(request, transaction_id):
-    transaction = get_object_or_404(Transaction, pk=transaction_id)
+def return_book(request, book_id):
+    book = get_object_or_404(Book, pk=book_id)
+    transaction = Transaction.objects.filter(book=book, returned_date__isnull=True).order_by('-checkout_date').first()
+    if not transaction:
+        messages.error(request, "No active checkout found for this book.")
+        return redirect('book_list')
 
     if request.method == 'POST':
         is_original_borrower = request.POST.get('borrowerToggle') == 'on'
         borrower_id = request.POST.get('borrower_id', '').strip()
 
         if is_original_borrower:
-            # Case-insensitive comparison with stored ID
             if not borrower_id or not borrower_id.upper() == transaction.borrower.borrower_id.upper():
                 messages.error(
                     request, "The borrower ID doesn't match the original checkout")
-                return render(request, 'books/return_form.html', {
+                return render(request, 'books/return_book.html', {
                     'transaction': transaction,
                     'now': timezone.now().date()
                 })
-
-            # Use original borrower as returner
             returner = transaction.borrower
         else:
-            # Handle third-party return
             returner_id = request.POST.get('returner_id', '').strip()
             if not returner_id:
                 messages.error(request, "Returner ID is required")
-                return redirect('return_book', transaction_id=transaction.id)
-
+                return redirect('return_book', book_id=book.id)
             returner, _ = CustomUser.objects.get_or_create(
                 borrower_id=returner_id,
                 defaults={'is_borrower': True}
             )
-
-        # Process return
         transaction.returned_date = timezone.now()
         transaction.returner = returner
         transaction.condition_notes = request.POST.get('condition_notes', '')
         transaction.save()
-
         messages.success(request, "Book returned successfully")
         return redirect('book_list')
 

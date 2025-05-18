@@ -75,7 +75,7 @@
                     Due: {{ book.transaction_set.first.due_date|date:"M d" }}
                 </span>
                 {% if book.transaction_set.first %}
-                <a href="{% url 'return_book' book.transaction_set.first.id %}" class="action-link text-amber-600 text-sm font-medium hover:text-amber-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
+                <a href="{% url 'return_book' book.id %}" class="action-link text-amber-600 text-sm font-medium hover:text-amber-800 flex items-center gap-2" style="pointer-events:auto;z-index:10;position:relative;">
                     <i class="fa-solid fa-rotate-left"></i>
                     Return
                 </a>
